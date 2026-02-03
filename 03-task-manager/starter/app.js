@@ -1,13 +1,30 @@
 const express = require('express')
 const app = express()
-const task = require('./routes/task')
+const tasks = require('./routes/tasks')
+const connectDB = require('./db/connect')
+require('dotenv').config()
+const notFound  = require('./middleware/not_found')
+const errorhandlerMiddleware = require('./middleware/error-handler')
 
-const port = 3000
+app.use(express.json())
+app.use(express.static('./public') )
+app.use('/api/v1/tasks',tasks)
 
-app.get('/home', (req,res)=>{
-    res.send('Task manager app')
-})
+app.use(errorhandlerMiddleware)
+app.use(notFound)
 
-app.use('/api/v1/task',task)
+const port = process.env.PORT || 3000 
 
-app.listen(port, console.log(`the server is listening to ${port}...`))
+const start = async () => {
+    try{
+        await connectDB(process.env.MONGO_URL)
+        app.listen(port, console.log(`the server is listening to ${port}...`))
+    }
+    catch(err){
+        console.log(err)
+    }
+}
+
+start()
+
+
