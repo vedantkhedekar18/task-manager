@@ -1,11 +1,12 @@
 const CustomAPIError = require('../errors/custom-error')
 const jwt = require('jsonwebtoken')
+const {badRequest} = require('../errors')
 
 const login = async (req,res) =>{
     const {username,password} = req.body
 
     if(!username || !password){
-        throw new CustomAPIError('Please provide Username and Password',401)
+        throw new badRequest('Please provide Username and Password')
     }
 
     const id = new Date().getDate()
@@ -16,8 +17,12 @@ const login = async (req,res) =>{
 }
 
 const dashboard = async (req,res) =>{
+
     const luckyNumber = Math.floor(Math.random()*100)
-    res.status(200).json({msg:`Hello, Vedant Khedekar`, secret:`Here is your authorized data,your lucly number is ${luckyNumber}`})
+     res.status(200).json({
+        msg:`Hello, ${req.user.username}`, secret:`Here is your authorized data,your lucly number is ${luckyNumber}`
+    })
+
 }
 
 module.exports = {
